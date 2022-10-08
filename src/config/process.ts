@@ -8,6 +8,7 @@ type TwilioConfig = {
 
 export const GALOY_API_PORT = process.env.GALOY_API_PORT || 4002
 export const GALOY_ADMIN_PORT = process.env.GALOY_ADMIN_PORT || 4001
+export const GALOY_WS_PORT = process.env.GALOY_WS_PORT || 4003
 
 const jwtSecret = process.env.JWT_SECRET
 if (!jwtSecret) {
