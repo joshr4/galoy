@@ -16,11 +16,11 @@ import {
   SelfPaymentError,
 } from "@domain/errors"
 import { DisplayCurrencyConverter } from "@domain/fiat/display-currency"
-import { PaymentInputValidator, WithdrawalFeeCalculator } from "@domain/wallets"
 import { WalletCurrency } from "@domain/shared"
-import { LockService } from "@services/lock"
+import { PaymentInputValidator, WithdrawalFeeCalculator } from "@domain/wallets"
 import { LedgerService } from "@services/ledger"
 import { OnChainService } from "@services/lnd/onchain-service"
+import { LockService } from "@services/lock"
 import { baseLogger } from "@services/logger"
 import { AccountsRepository, WalletsRepository } from "@services/mongoose"
 import { NotificationsService } from "@services/notifications"
@@ -32,13 +32,13 @@ import { ResourceExpiredLockServiceError } from "@domain/lock"
 
 import { DisplayCurrency } from "@domain/fiat"
 
-import { IdentityRepository } from "@services/kratos"
+import { UsersRepository } from "@services/mongoose/users"
 
+import { getOnChainFee } from "./get-on-chain-fee"
 import {
   checkIntraledgerLimits,
   checkWithdrawalLimits,
 } from "./private/check-limit-helpers"
-import { getOnChainFee } from "./get-on-chain-fee"
 
 const { dustThreshold } = getOnChainWalletConfig()
 
@@ -197,9 +197,7 @@ const executePaymentViaIntraledger = async <
 
     if (journal instanceof Error) return journal
 
-    const recipientUser = await IdentityRepository().getIdentity(
-      recipientAccount.kratosUserId,
-    )
+    const recipientUser = await UsersRepository().findById(recipientAccount.kratosUserId)
     if (recipientUser instanceof Error) return recipientUser
 
     const displayPaymentAmount: DisplayPaymentAmount<DisplayCurrency> = {
@@ -212,7 +210,7 @@ const executePaymentViaIntraledger = async <
       recipientAccountId: recipientWallet.accountId,
       recipientWalletId: recipientWallet.id,
       recipientDeviceTokens: recipientUser.deviceTokens,
-      recipientLanguage: recipientUser.language,
+      recipientLanguage: recipientUser.languageOrDefault,
       paymentAmount: { amount: BigInt(amountSats), currency: recipientWallet.currency },
       displayPaymentAmount,
     })

@@ -29,7 +29,7 @@ import { ResourceExpiredLockServiceError } from "@domain/lock"
 import { Accounts } from "@app"
 import { btcFromUsdMidPriceFn, usdFromBtcMidPriceFn } from "@app/shared"
 
-import { IdentityRepository } from "@services/kratos"
+import { UsersRepository } from "@services/mongoose/users"
 
 import {
   getPriceRatioForLimits,
@@ -286,9 +286,7 @@ const executePaymentViaIntraledger = async <
 
     const totalSendAmounts = paymentFlow.totalAmountsForPayment()
 
-    const recipientUser = await IdentityRepository().getIdentity(
-      recipientAccount.kratosUserId,
-    )
+    const recipientUser = await UsersRepository().findById(recipientAccount.kratosUserId)
     if (recipientUser instanceof Error) return recipientUser
 
     let amount = totalSendAmounts.btc.amount
@@ -301,7 +299,7 @@ const executePaymentViaIntraledger = async <
       recipientAccountId: recipientWallet.accountId,
       recipientWalletId: recipientWallet.id,
       recipientDeviceTokens: recipientUser.deviceTokens,
-      recipientLanguage: recipientUser.language,
+      recipientLanguage: recipientUser.languageOrDefault,
       paymentAmount: { amount, currency: recipientWallet.currency },
       displayPaymentAmount: { amount: metadata.usd, currency: DisplayCurrency.Usd },
     })

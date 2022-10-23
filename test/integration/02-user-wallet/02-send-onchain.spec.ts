@@ -56,7 +56,7 @@ import { getBalanceHelper } from "test/helpers/wallet"
 jest.mock("@app/prices/get-current-price", () => require("test/mocks/get-current-price"))
 
 let initialBalanceUserA: Satoshis
-let userA: AccountRecord
+let accountRecordA: AccountRecord
 
 let accountA: Account
 let accountG: Account
@@ -82,7 +82,7 @@ beforeAll(async () => {
   await createUserAndWalletFromUserRef("E")
   await createUserAndWalletFromUserRef("F")
 
-  userA = await getAccountRecordByTestUserRef("A")
+  accountRecordA = await getAccountRecordByTestUserRef("A")
   walletIdA = await getDefaultWalletIdByTestUserRef("A")
   accountA = await getAccountByTestUserRef("A")
 
@@ -638,7 +638,7 @@ describe("UserWallet - onChainPay", () => {
 
     const { outgoingBaseAmount } = walletVolume
 
-    if (!userA.level) throw new Error("Invalid or non existent user level")
+    if (!accountRecordA.level) throw new Error("Invalid or non existent user level")
 
     const withdrawalLimit = getAccountLimits({ level: accountA.level }).withdrawalLimit
 

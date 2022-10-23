@@ -49,7 +49,7 @@ import { LoopService } from "@services/loopd"
 import { LND1_LOOP_CONFIG, LND2_LOOP_CONFIG } from "@app/swap/get-active-loopd"
 import { SwapTriggerError } from "@domain/swap/errors"
 
-import { IdentityRepository } from "@services/kratos"
+import { UsersRepository } from "@services/mongoose/users"
 
 import healthzHandler from "./middlewares/healthz"
 
@@ -59,7 +59,7 @@ const logger = baseLogger.child({ module: "trigger" })
 export const onchainTransactionEventHandler = async (
   tx: SubscribeToTransactionsChainTransactionEvent,
 ) => {
-  const identitiesRepo = IdentityRepository()
+  const usersRepo = UsersRepository()
 
   logger.info({ tx }, "received new onchain tx event")
   const onchainLogger = logger.child({
@@ -120,7 +120,7 @@ export const onchainTransactionEventHandler = async (
     const senderAccount = await AccountsRepository().findById(senderWallet.accountId)
     if (senderAccount instanceof Error) return senderAccount
 
-    const senderUser = await identitiesRepo.getIdentity(senderAccount.kratosUserId)
+    const senderUser = await usersRepo.findById(senderAccount.kratosUserId)
     if (senderUser instanceof Error) return senderUser
 
     await NotificationsService().onChainTxSent({
@@ -131,7 +131,7 @@ export const onchainTransactionEventHandler = async (
       displayPaymentAmount,
       txHash,
       senderDeviceTokens: senderUser.deviceTokens,
-      senderLanguage: senderUser.language,
+      senderLanguage: senderUser.languageOrDefault,
     })
   } else {
     // incoming transaction
@@ -167,9 +167,7 @@ export const onchainTransactionEventHandler = async (
         const recipientAccount = await AccountsRepository().findById(wallet.accountId)
         if (recipientAccount instanceof Error) return recipientAccount
 
-        const recipientUser = await identitiesRepo.getIdentity(
-          recipientAccount.kratosUserId,
-        )
+        const recipientUser = await usersRepo.findById(recipientAccount.kratosUserId)
         if (recipientUser instanceof Error) return recipientUser
 
         NotificationsService().onChainTxReceivedPending({
@@ -180,7 +178,7 @@ export const onchainTransactionEventHandler = async (
           displayPaymentAmount,
           txHash,
           recipientDeviceTokens: recipientUser.deviceTokens,
-          recipientLanguage: recipientUser.language,
+          recipientLanguage: recipientUser.languageOrDefault,
         })
       })
     }
