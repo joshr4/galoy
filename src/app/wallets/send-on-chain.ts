@@ -402,10 +402,13 @@ const executePaymentViaOnChain = async <
     const converter = NewDisplayCurrencyConverter(displayCentsPerSat)
 
     const metadata = LedgerFacade.OnChainSendLedgerMetadata({
+      onChainTxHash: txHash,
+      paymentFlow,
+
       amountDisplayCurrency: converter.fromUsdAmount(paymentFlow.usdPaymentAmount),
       feeDisplayCurrency: converter.fromUsdAmount(paymentFlow.usdProtocolFee),
-      onChainTxHash: txHash,
-      fee: paymentFlow.btcProtocolFee,
+      displayCurrency: DisplayCurrency.Usd,
+
       payeeAddresses: [address],
       sendAll,
     })
