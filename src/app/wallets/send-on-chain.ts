@@ -112,6 +112,7 @@ export const payOnChainByWalletId = async ({
     volumeLightningFn: LedgerService().lightningTxBaseVolumeSince,
     volumeOnChainFn: LedgerService().onChainTxBaseVolumeSince,
     isExternalAddress: async (address: OnChainAddress) => Promise.resolve(!!address),
+    sendAll,
   })
     .withAddress(checkedAddress)
     .withSenderWalletAndAccount({
@@ -326,11 +327,9 @@ const executePaymentViaOnChain = async <
   })
   if (minerFeeAmount instanceof Error) return minerFeeAmount
 
-  const builderWithFee = await builder.withMinerFee(minerFeeAmount)
-  const paymentFlow = sendAll
-    ? builderWithFee.withSendAll()
-    : builderWithFee.withoutSendAll()
+  const paymentFlow = await builder.withMinerFee(minerFeeAmount)
   if (paymentFlow instanceof Error) return paymentFlow
+  paymentFlow
 
   const onChainAvailableBalance = await onChainService.getBalance()
   if (onChainAvailableBalance instanceof Error) return onChainAvailableBalance
@@ -392,21 +391,6 @@ const executePaymentViaOnChain = async <
       minerFee = minerFee_
     }
     console.log("PLACEHOLDER", minerFee)
-
-    // const journal = await LedgerService().addOnChainTxSend({
-    //   walletId: senderWallet.id,
-    //   walletCurrency: senderWallet.currency,
-    //   txHash,
-    //   description: memo || "",
-    //   sats,
-    //   totalFee,
-    //   bankFee,
-    //   amountDisplayCurrency,
-    //   payeeAddress: address,
-    //   sendAll,
-    //   totalFeeDisplayCurrency,
-    // })
-    // if (journal instanceof Error) return journal
 
     const priceRatio = PriceRatio({
       usd: paymentFlow.usdPaymentAmount,
