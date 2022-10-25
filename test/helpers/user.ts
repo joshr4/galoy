@@ -97,7 +97,6 @@ export const createUserAndWalletFromUserRef = async (ref: string) => {
 
 export const createUserAndWallet = async (entry: TestEntry) => {
   const phone = entry.phone as PhoneNumber
-  let kratosUserId: KratosUserId
 
   const authService = AuthWithPhonePasswordlessService()
 
@@ -106,35 +105,33 @@ export const createUserAndWallet = async (entry: TestEntry) => {
   // currently kratos users are not been reset between tests, but accounts and wallets are.
   if (kratosResult instanceof LikelyNoUserWithThisPhoneExistError) {
     kratosResult = await authService.createIdentityWithSession(phone)
-    if (kratosResult instanceof AuthenticationError) throw kratosResult
-
-    kratosUserId = kratosResult.kratosUserId
-
-    let phoneMetadata
-
-    if (entry.phoneMetadataCarrierType) {
-      phoneMetadata = {
-        carrier: {
-          type: entry.phoneMetadataCarrierType as CarrierType,
-          name: "",
-          mobile_network_code: "",
-          mobile_country_code: "",
-          error_code: "",
-        },
-        countryCode: "US",
-      }
-    }
-
-    const res = await UsersRepository().update({
-      id: kratosUserId,
-      deviceTokens: [`token-${kratosUserId}`] as DeviceToken[],
-      phoneMetadata,
-    })
-    if (res instanceof Error) throw res
   }
   if (kratosResult instanceof AuthenticationError) throw kratosResult
 
-  kratosUserId = kratosResult.kratosUserId
+  const kratosUserId = kratosResult.kratosUserId
+
+  let phoneMetadata
+
+  if (entry.phoneMetadataCarrierType) {
+    phoneMetadata = {
+      carrier: {
+        type: entry.phoneMetadataCarrierType as CarrierType,
+        name: "",
+        mobile_network_code: "",
+        mobile_country_code: "",
+        error_code: "",
+      },
+      countryCode: "US",
+    }
+  }
+
+  const res = await UsersRepository().update({
+    id: kratosUserId,
+    deviceTokens: [`token-${kratosUserId}`] as DeviceToken[],
+    phoneMetadata,
+    phone,
+  })
+  if (res instanceof Error) throw res
 
   let account = await accounts.findByKratosUserId(kratosUserId)
 

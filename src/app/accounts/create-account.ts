@@ -66,7 +66,7 @@ export const createAccountWithPhoneIdentifier = async ({
   } else {
     const user = await UsersRepository().findById(kratosUserId)
     if (!(user instanceof Error)) {
-      await UsersRepository().update({ ...user, phoneMetadata })
+      await UsersRepository().update({ ...user, phone, phoneMetadata })
     }
   }
 

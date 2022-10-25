@@ -47,10 +47,10 @@ const addTracing = (trcFields: typeof fields) => {
         context: GraphQLContext | GraphQLContextAuth,
         info: GraphQLResolveInfo,
       ) => {
-        const { ip, domainAccount, kratosUser } = context
+        const { ip, domainAccount, user } = context
         return addAttributesToCurrentSpanAndPropagate(
           {
-            [SemanticAttributes.ENDUSER_ID]: kratosUser?.id,
+            [SemanticAttributes.ENDUSER_ID]: user?.id,
             [ACCOUNT_USERNAME]: domainAccount?.username,
             [SemanticAttributes.HTTP_CLIENT_IP]: ip,
           },
