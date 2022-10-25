@@ -331,10 +331,6 @@ interface ILedgerService {
     args: AddLnIntraledgerTxTransferArgs,
   ): Promise<LedgerJournal | LedgerServiceError>
 
-  addOnChainTxSend(
-    args: AddOnChainTxSendArgs,
-  ): Promise<LedgerJournal | LedgerServiceError>
-
   addOnChainIntraledgerTxTransfer(
     args: AddOnChainIntraledgerTxTransferArgs,
   ): Promise<LedgerJournal | LedgerServiceError>
