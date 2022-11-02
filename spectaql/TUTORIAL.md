@@ -15,6 +15,22 @@ All other methods require a valid JWT set in the header as a bearer token - `Aut
 ### userRequestAuthCode
 
 #### query
+
+Create Captcha
+```bash
+export URI=https://api.staging.galoy.io/graphql
+export PHONE='+12025550148'
+curl --location --request POST $URI --header 'Content-Type: application/json' --data-raw '{"query":"mutation captchaCreateChallenge () {\n    captchaCreateChallenge () {\n        result {\n            challengeCode\n            failbackMode\n            id\n            newCaptcha\n        }\n            errors {\n            message\n            path\n        }\n        success\n    }\n}"}'
+```
+
+Captcha Request Code
+```bash
+export URI=https://api.staging.galoy.io/graphql
+export PHONE='+12025550148'
+curl --location --request POST $URI --header 'Content-Type: application/json' --data-raw '{"query":"mutation captchaCreateChallenge () {\n    captchaCreateChallenge () {\n        result {\n            challengeCode\n            failbackMode\n            id\n            newCaptcha\n        }\n            errors {\n            message\n            path\n        }\n        success\n    }\n}","variables":{"input":{"phone":"'"$PHONE"'"}}}'
+```
+
+Request Auth Code
 ```bash
 export URI=https://api.staging.galoy.io/graphql
 export PHONE='+12025550148'
