@@ -15,6 +15,22 @@ All other methods require a valid JWT set in the header as a bearer token - `Aut
 ### userRequestAuthCode
 
 #### query
+
+Create Captcha
+```bash
+export URI=https://api.staging.galoy.io/graphql
+export PHONE='+12025550148'
+curl --location --request POST $URI --header 'Content-Type: application/json' --data-raw '{"query":"mutation captchaCreateChallenge () {\n    captchaCreateChallenge () {\n        result {\n            challengeCode\n            failbackMode\n            id\n            newCaptcha\n        }\n            errors {\n            message\n            path\n        }\n        success\n    }\n}"}'
+```
+
+Captcha Request Code
+```bash
+export URI=https://api.staging.galoy.io/graphql
+export PHONE='+12025550148'
+curl --location --request POST $URI --header 'Content-Type: application/json' --data-raw '{"query":"mutation captchaCreateChallenge () {\n    captchaCreateChallenge () {\n        result {\n            challengeCode\n            failbackMode\n            id\n            newCaptcha\n        }\n            errors {\n            message\n            path\n        }\n        success\n    }\n}","variables":{"input":{"phone":"'"$PHONE"'"}}}'
+```
+
+Request Auth Code
 ```bash
 export URI=https://api.staging.galoy.io/graphql
 export PHONE='+12025550148'
@@ -124,6 +140,6 @@ curl --location --request POST $URI --header "$AUTH_TOKEN" --header 'Content-Typ
 
 ## Extra Resources
 
-If you use Postman, we have a collection you can import to test the API. 
+If you use Postman, we have a collection you can import to test the API.
 
-Download it here: [Lightning Integration.postman_collection.json](https://github.com/GaloyMoney/galoy/tree/main/src/graphql/main/docs/Lightning-Integration.postman_collection.json)
+Download it here: [galoy_graphql_main_api.postman_collection.json](https://github.com/GaloyMoney/galoy/tree/main/src/graphql/docs/galoy_graphql_main_api.postman_collection.json)
